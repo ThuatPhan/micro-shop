@@ -23,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('create:category')")
     @Override
     public CategoryResponse createCategory(CategoryCreationRequest request) {
         boolean isCategoryExists = categoryRepository.existsByName(request.getName());
@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
                 categoriesPage.map(categoryMapper::toCategoryResponse).toList());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('update:category')")
     @Override
     public CategoryResponse updateCategory(String categoryId, CategoryUpdateRequest request) {
         boolean isCategoryExists = categoryRepository.existsByNameAndIdNot(request.getName(), categoryId);
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('delete:category')")
     @Override
     public void deleteCategory(String categoryId) {
         boolean isCategoryExists = categoryRepository.existsById(categoryId);
