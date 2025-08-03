@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
     ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('create:product')")
     @Override
     public ProductResponse createProduct(ProductCreationRequest request) {
         boolean isProductExists = productRepository.existsByName(request.getName());
@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
                 productsPage.map(productMapper::toProductResponse).toList());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('update:product')")
     @Override
     public ProductResponse updateProduct(String productId, ProductUpdateRequest request) {
         boolean isProductExists = productRepository.existsByNameAndIdNot(request.getName(), productId);
@@ -80,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponse(productRepository.save(product));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('delete:product')")
     @Override
     public void deleteProduct(String productId) {
         boolean isProductExists = productRepository.existsById(productId);
