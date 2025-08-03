@@ -14,7 +14,9 @@ public enum ErrorCode {
     CATEGORY_ALREADY_EXISTS(1001, HttpStatus.BAD_REQUEST, "Category already exists"),
     CATEGORY_NOT_FOUND(1002, HttpStatus.NOT_FOUND, "Category not found"),
     PRODUCT_ALREADY_EXISTS(1003, HttpStatus.BAD_REQUEST, "Products already exists"),
-    PRODUCT_NOT_FOUND(1004, HttpStatus.NOT_FOUND, "Product not found");
+    PRODUCT_NOT_FOUND(1004, HttpStatus.NOT_FOUND, "Product not found"),
+
+    UNAUTHENTICATED(1005, HttpStatus.UNAUTHORIZED, "Unauthenticated request");
 
     int code;
     HttpStatus statusCode;

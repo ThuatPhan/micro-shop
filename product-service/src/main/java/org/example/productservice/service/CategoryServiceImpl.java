@@ -9,6 +9,7 @@ import org.example.productservice.exception.ErrorCode;
 import org.example.productservice.mapper.CategoryMapper;
 import org.example.productservice.repository.CategoryRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -22,6 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public CategoryResponse createCategory(CategoryCreationRequest request) {
         boolean isCategoryExists = categoryRepository.existsByName(request.getName());
@@ -51,6 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
                 categoriesPage.map(categoryMapper::toCategoryResponse).toList());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public CategoryResponse updateCategory(String categoryId, CategoryUpdateRequest request) {
         boolean isCategoryExists = categoryRepository.existsByNameAndIdNot(request.getName(), categoryId);
@@ -67,6 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void deleteCategory(String categoryId) {
         boolean isCategoryExists = categoryRepository.existsById(categoryId);

@@ -3,13 +3,14 @@ package org.example.productservice.service;
 import org.example.productservice.dto.request.ProductCreationRequest;
 import org.example.productservice.dto.request.ProductUpdateRequest;
 import org.example.productservice.dto.response.PageResponse;
+import org.example.productservice.dto.response.ProductResponse;
 import org.example.productservice.exception.AppException;
 import org.example.productservice.exception.ErrorCode;
 import org.example.productservice.mapper.ProductMapper;
-import org.example.productservice.dto.response.ProductResponse;
 import org.example.productservice.repository.CategoryRepository;
 import org.example.productservice.repository.ProductRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public ProductResponse createProduct(ProductCreationRequest request) {
         boolean isProductExists = productRepository.existsByName(request.getName());
@@ -57,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
                 productsPage.map(productMapper::toProductResponse).toList());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public ProductResponse updateProduct(String productId, ProductUpdateRequest request) {
         boolean isProductExists = productRepository.existsByNameAndIdNot(request.getName(), productId);
@@ -77,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponse(productRepository.save(product));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void deleteProduct(String productId) {
         boolean isProductExists = productRepository.existsById(productId);
