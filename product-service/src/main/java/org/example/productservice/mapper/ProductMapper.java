@@ -1,8 +1,8 @@
 package org.example.productservice.mapper;
 
-import org.example.productservice.dto.response.ProductResponse;
 import org.example.productservice.dto.request.ProductCreationRequest;
 import org.example.productservice.dto.request.ProductUpdateRequest;
+import org.example.productservice.dto.response.ProductResponse;
 import org.example.productservice.entity.Product;
 import org.mapstruct.*;
 
