@@ -1,5 +1,11 @@
 package org.example.productservice.service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.example.productservice.dto.request.ProductBatchRequest;
 import org.example.productservice.dto.request.ProductCreationRequest;
 import org.example.productservice.dto.request.ProductUpdateRequest;
 import org.example.productservice.dto.response.PageResponse;
@@ -89,5 +95,27 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepository.deleteById(productId);
+    }
+
+    @Override
+    public List<ProductResponse> getProducts(ProductBatchRequest request) {
+        var products = productRepository.findAllById(request.getProductIds()).stream()
+                .map(productMapper::toProductResponse)
+                .toList();
+
+        Set<String> validIds = products.stream().map(ProductResponse::getId).collect(Collectors.toSet());
+
+        Set<String> invalidIds = request.getProductIds().stream()
+                .filter(id -> !validIds.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!invalidIds.isEmpty()) {
+            StringJoiner stringJoiner = new StringJoiner(", ");
+            invalidIds.forEach(stringJoiner::add);
+
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND, "Product ids [" + stringJoiner + "] not found");
+        }
+
+        return products;
     }
 }

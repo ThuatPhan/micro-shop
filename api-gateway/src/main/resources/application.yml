@@ -24,6 +24,12 @@ spring:
                 - Path=${app.api-prefix}/products/**,${app.api-prefix}/categories/**
               filters:
                 - StripPrefix=2
+            - id: cart-service
+              uri: lb://cart-service
+              predicates:
+                - Path=${app.api-prefix}/carts/**
+              filters:
+                - StripPrefix=2
 
 management:
   endpoints:
@@ -37,6 +43,6 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true

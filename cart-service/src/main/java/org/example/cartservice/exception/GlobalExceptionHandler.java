@@ -1,6 +1,6 @@
-package org.example.productservice.exception;
+package org.example.cartservice.exception;
 
-import org.example.productservice.dto.response.ApiResponse;
+import org.example.cartservice.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,10 +13,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> appExceptionHandler(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.error(
-                        errorCode.getCode(),
-                        exception.getCustomMessage() != null ? exception.getCustomMessage() : errorCode.getMessage()));
+        return ResponseEntity.badRequest().body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
