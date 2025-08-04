@@ -1,4 +1,4 @@
-package org.example.productservice.configuration;
+package org.example.cartservice.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +26,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // spotless:off
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/products/**", "/categories/**", "/internal/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/carts/**").authenticated()
         );
 
         http.csrf(AbstractHttpConfigurer::disable);
