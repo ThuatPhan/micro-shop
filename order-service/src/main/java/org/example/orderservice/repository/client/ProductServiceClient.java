@@ -1,11 +1,11 @@
-package org.example.cartservice.repository.client;
+package org.example.orderservice.repository.client;
 
 import java.util.List;
 
-import org.example.cartservice.configuration.AuthenticationRequestInterceptor;
-import org.example.cartservice.dto.request.ProductBatchRequest;
-import org.example.cartservice.dto.response.ApiResponse;
-import org.example.cartservice.dto.response.ProductResponse;
+import org.example.orderservice.configuration.AuthenticationRequestInterceptor;
+import org.example.orderservice.dto.request.ProductBatchRequest;
+import org.example.orderservice.dto.response.ApiResponse;
+import org.example.orderservice.dto.response.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

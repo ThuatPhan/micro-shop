@@ -12,7 +12,4 @@ public interface CartItemMapper {
 
     @Mapping(target = "product", expression = "java(product)")
     CartItemResponse toCartItemResponse(CartItem cartItem, @Context ProductResponse product);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void partialUpdate(@MappingTarget CartItem cartItem, CartItemRequest request);
 }
