@@ -30,6 +30,12 @@ spring:
                 - Path=${app.api-prefix}/carts/**
               filters:
                 - StripPrefix=2
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=${app.api-prefix}/orders/**
+              filters:
+                - StripPrefix=2
 
 management:
   endpoints:
