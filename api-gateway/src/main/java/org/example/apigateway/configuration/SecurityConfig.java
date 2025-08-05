@@ -30,7 +30,8 @@ public class SecurityConfig {
                 "/v3/api-docs/swagger-config",
                 "/api/v1/products/v3/api-docs",
                 "/api/v1/carts/v3/api-docs",
-                "/api/v1/orders/v3/api-docs"
+                "/api/v1/orders/v3/api-docs",
+                "/actuator/**"
         };
 
         http.authorizeExchange(exchange -> exchange

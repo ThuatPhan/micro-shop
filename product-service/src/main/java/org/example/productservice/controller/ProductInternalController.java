@@ -2,6 +2,7 @@ package org.example.productservice.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.productservice.dto.request.ProductBatchRequest;
 import org.example.productservice.dto.response.ApiResponse;
 import org.example.productservice.dto.response.ProductResponse;
@@ -13,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Tag(name = "Internal Product API")
 @RestController
 @RequestMapping("/internal/products")
 @RequiredArgsConstructor

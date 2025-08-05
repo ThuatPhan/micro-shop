@@ -9,13 +9,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +25,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     CustomJwtDecoder jwtDecoder;
 
-    String[] PUBLIC_ENDPOINTS = {"/orders/v3/api-docs", "/swagger-ui/**", "/swagger-ui.html"};
+    String[] PUBLIC_ENDPOINTS = {"/orders/v3/api-docs", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
