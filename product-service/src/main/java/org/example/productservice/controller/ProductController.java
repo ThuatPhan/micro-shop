@@ -11,10 +11,13 @@ import org.example.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Tag(name = "Product API")
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductController {
     ProductService productService;
 
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ProductResponse> createProduct(@RequestBody @Valid ProductCreationRequest request) {
@@ -39,12 +43,14 @@ public class ProductController {
         return ApiResponse.success(HttpStatus.OK.value(), productService.getProducts(page, size));
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{productId}")
     public ApiResponse<ProductResponse> updateProduct(
             @PathVariable String productId, @RequestBody @Valid ProductUpdateRequest request) {
         return ApiResponse.success(HttpStatus.OK.value(), productService.updateProduct(productId, request));
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable String productId) {

@@ -12,12 +12,11 @@ import java.util.stream.Collectors;
 import org.example.orderservice.dto.request.OrderItemRequest;
 import org.example.orderservice.dto.request.OrderRequest;
 import org.example.orderservice.dto.request.ProductBatchRequest;
-import org.example.orderservice.dto.response.ApiResponse;
-import org.example.orderservice.dto.response.OrderItemResponse;
-import org.example.orderservice.dto.response.OrderResponse;
-import org.example.orderservice.dto.response.ProductResponse;
+import org.example.orderservice.dto.response.*;
 import org.example.orderservice.entity.Order;
 import org.example.orderservice.entity.OrderItem;
+import org.example.orderservice.exception.AppException;
+import org.example.orderservice.exception.ErrorCode;
 import org.example.orderservice.mapper.OrderItemMapper;
 import org.example.orderservice.mapper.OrderMapper;
 import org.example.orderservice.repository.OrderItemRepository;
@@ -50,9 +49,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse createOrder(OrderRequest request) {
-        Map<String, ProductResponse> productMap = fetchProductData(request);
+        var productIds = request.getItems()
+                .stream()
+                .map(OrderItemRequest::getProduct)
+                .collect(Collectors.toList());
+
+        Map<String, ProductResponse> productMap = fetchProductData(productIds);
+
         Order order = saveOrderWithTotal(request, productMap);
+
         List<OrderItem> savedItems = saveOrderItems(request, order);
+
         OrderResponse orderResponse = mapToOrderResponse(order, savedItems, productMap);
 
         try {
@@ -62,6 +69,19 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderResponse;
+    }
+
+    @Override
+    public OrderResponse getOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        List<OrderItem> items = orderItemRepository.findByOrder(order);
+
+        List<String> productIds = items.stream().map(OrderItem::getProductId).collect(Collectors.toList());
+        Map<String, ProductResponse> productMap = fetchProductData(productIds);
+
+        return mapToOrderResponse(order, items, productMap);
     }
 
     private Order saveOrderWithTotal(OrderRequest request, Map<String, ProductResponse> productMap) {
@@ -94,19 +114,13 @@ public class OrderServiceImpl implements OrderService {
         return orderItemRepository.saveAll(items);
     }
 
-    // spotless:off
     private OrderResponse mapToOrderResponse(
-            Order order, List<OrderItem> orderItems, Map<String, ProductResponse> productMap
-    ) {
+            Order order, List<OrderItem> orderItems, Map<String, ProductResponse> productMap) {
         List<OrderItemResponse> responses = orderItemMapper.toOrderItemResponseList(orderItems, productMap);
         return orderMapper.toOrderResponse(order, responses);
     }
-    // spotless:on
 
-    private Map<String, ProductResponse> fetchProductData(OrderRequest request) {
-        List<String> productIds =
-                request.getItems().stream().map(OrderItemRequest::getProduct).collect(Collectors.toList());
-
+    private Map<String, ProductResponse> fetchProductData(List<String> productIds) {
         if (productIds.isEmpty()) return Collections.emptyMap();
 
         ApiResponse<List<ProductResponse>> response = productServiceClient.getProducts(

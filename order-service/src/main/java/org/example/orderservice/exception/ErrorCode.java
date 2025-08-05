@@ -27,6 +27,8 @@ public enum ErrorCode {
     CART_NOT_FOUND(3000, HttpStatus.NOT_FOUND, "Cart not found"),
     CART_ITEM_NOT_FOUND(3001, HttpStatus.NOT_FOUND, "Cart item not found"),
     INVALID_QUANTITY(3002, HttpStatus.BAD_REQUEST, "Quantity must be greater than 0"),
+
+    ORDER_NOT_FOUND(4000, HttpStatus.NOT_FOUND, "Order not found"),
     ;
 
     int code;
