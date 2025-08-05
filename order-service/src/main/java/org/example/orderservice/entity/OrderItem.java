@@ -24,7 +24,10 @@ public class OrderItem {
     @Column(nullable = false, updatable = false)
     Double unitPrice;
 
-    @Column(name = "product_id", updatable = false)
+    @Column(nullable = false, updatable = false)
+    Double subTotal;
+
+    @Column(updatable = false)
     String productId;
 
     @ManyToOne

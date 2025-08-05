@@ -33,11 +33,11 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<Void>> runtimeExceptionHandler(RuntimeException exception) {
-        ErrorCode errorCode = ErrorCode.UNCATEGORIZED;
-
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
-    }
+    // @ExceptionHandler(RuntimeException.class)
+    //    public ResponseEntity<ApiResponse<Void>> runtimeExceptionHandler(RuntimeException exception) {
+    //        ErrorCode errorCode = ErrorCode.UNCATEGORIZED;
+    //
+    //        return ResponseEntity.status(errorCode.getStatusCode())
+    //                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
+    //    }
 }
