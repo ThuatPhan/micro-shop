@@ -18,7 +18,8 @@ public enum ErrorCode {
     CATEGORY_ALREADY_EXISTS(2000, HttpStatus.BAD_REQUEST, "Category already exists"),
     CATEGORY_NOT_FOUND(2001, HttpStatus.NOT_FOUND, "Category not found"),
     PRODUCT_ALREADY_EXISTS(2002, HttpStatus.BAD_REQUEST, "Products already exists"),
-    PRODUCT_NOT_FOUND(2003, HttpStatus.NOT_FOUND, "Product not found"),;
+    PRODUCT_NOT_FOUND(2003, HttpStatus.NOT_FOUND, "Product not found"),
+    ;
 
     int code;
     HttpStatus statusCode;

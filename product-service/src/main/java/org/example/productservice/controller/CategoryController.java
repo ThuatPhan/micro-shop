@@ -11,10 +11,13 @@ import org.example.productservice.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Tag(name = "Category API")
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class CategoryController {
     CategoryService categoryService;
 
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CategoryResponse> createCategory(@RequestBody @Valid CategoryCreationRequest request) {
@@ -39,12 +43,14 @@ public class CategoryController {
         return ApiResponse.success(HttpStatus.OK.value(), categoryService.getCategories(page, size));
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{categoryId}")
     public ApiResponse<CategoryResponse> updateCategory(
             @PathVariable String categoryId, @RequestBody @Valid CategoryUpdateRequest request) {
         return ApiResponse.success(HttpStatus.OK.value(), categoryService.updateCategory(categoryId, request));
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable String categoryId) {

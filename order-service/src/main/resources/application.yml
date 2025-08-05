@@ -21,6 +21,10 @@ spring:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
 
+springdoc:
+  api-docs:
+    path: /orders/v3/api-docs
+
 management:
   endpoints:
     web:

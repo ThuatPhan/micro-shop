@@ -1,8 +1,7 @@
 package org.example.productservice.controller;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.List;
+
 import org.example.productservice.dto.request.ProductBatchRequest;
 import org.example.productservice.dto.response.ApiResponse;
 import org.example.productservice.dto.response.ProductResponse;
@@ -10,7 +9,9 @@ import org.example.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/internal/products")

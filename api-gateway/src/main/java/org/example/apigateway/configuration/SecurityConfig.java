@@ -22,13 +22,19 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(
             ServerHttpSecurity http, @Value("${app.api-prefix}") String prefix) {
 
-        String[] publicEndpoints = {
+        String[] PUBLIC_ENDPOINTS = {
                 prefix + "/categories/**",
-                prefix + "/products/**"
+                prefix + "/products/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/v3/api-docs/swagger-config",
+                "/api/v1/products/v3/api-docs",
+                "/api/v1/carts/v3/api-docs",
+                "/api/v1/orders/v3/api-docs"
         };
 
         http.authorizeExchange(exchange -> exchange
-                .pathMatchers(publicEndpoints).permitAll()
+                .pathMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .anyExchange().authenticated()
         );
 

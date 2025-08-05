@@ -37,6 +37,16 @@ spring:
               filters:
                 - StripPrefix=2
 
+springdoc:
+  swagger-ui:
+    urls:
+      - name: product-service
+        url: /api/v1/products/v3/api-docs
+      - name: cart-service
+        url: /api/v1/carts/v3/api-docs
+      - name: order-service
+        url: /api/v1/orders/v3/api-docs
+
 management:
   endpoints:
     web:
@@ -49,6 +59,6 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_URL}
   instance:
     prefer-ip-address: true
