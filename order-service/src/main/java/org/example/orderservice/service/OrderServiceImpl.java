@@ -49,10 +49,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse createOrder(OrderRequest request) {
-        var productIds = request.getItems()
-                .stream()
-                .map(OrderItemRequest::getProduct)
-                .collect(Collectors.toList());
+        var productIds =
+                request.getItems().stream().map(OrderItemRequest::getProduct).collect(Collectors.toList());
 
         Map<String, ProductResponse> productMap = fetchProductData(productIds);
 
@@ -73,8 +71,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse getOrder(String orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         List<OrderItem> items = orderItemRepository.findByOrder(order);
 

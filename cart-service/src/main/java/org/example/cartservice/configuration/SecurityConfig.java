@@ -25,7 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class SecurityConfig {
     CustomJwtDecoder jwtDecoder;
 
-    String[] PUBLIC_ENDPOINTS = {"/carts/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
+    String[] PUBLIC_ENDPOINTS = {"/carts/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
