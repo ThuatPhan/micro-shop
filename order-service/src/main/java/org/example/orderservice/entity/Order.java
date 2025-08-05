@@ -33,6 +33,9 @@ public class Order {
     @UpdateTimestamp
     Instant updatedAt;
 
+    @Column(nullable = false, updatable = false)
+    String email;
+
     @Column(name = "user_id", updatable = false)
     String userId;
 }

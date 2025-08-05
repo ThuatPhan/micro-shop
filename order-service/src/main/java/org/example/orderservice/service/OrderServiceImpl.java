@@ -1,5 +1,8 @@
 package org.example.orderservice.service;
 
+import static org.example.orderservice.constant.RabbitMQConstant.EXCHANGE;
+import static org.example.orderservice.constant.RabbitMQConstant.ROUTING_KEY;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -16,16 +19,23 @@ import org.example.orderservice.dto.response.ProductResponse;
 import org.example.orderservice.entity.Order;
 import org.example.orderservice.entity.OrderItem;
 import org.example.orderservice.mapper.OrderItemMapper;
+import org.example.orderservice.mapper.OrderMapper;
 import org.example.orderservice.repository.OrderItemRepository;
 import org.example.orderservice.repository.OrderRepository;
 import org.example.orderservice.repository.client.ProductServiceClient;
 import org.example.orderservice.util.SecurityUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -33,14 +43,25 @@ public class OrderServiceImpl implements OrderService {
     ProductServiceClient productServiceClient;
     OrderItemRepository orderItemRepository;
     OrderRepository orderRepository;
+    OrderMapper orderMapper;
     OrderItemMapper orderItemMapper;
+    RabbitTemplate rabbitTemplate;
+    ObjectMapper objectMapper;
 
     @Override
     public OrderResponse createOrder(OrderRequest request) {
         Map<String, ProductResponse> productMap = fetchProductData(request);
         Order order = saveOrderWithTotal(request, productMap);
         List<OrderItem> savedItems = saveOrderItems(request, order);
-        return mapToOrderResponse(savedItems, productMap);
+        OrderResponse orderResponse = mapToOrderResponse(order, savedItems, productMap);
+
+        try {
+            rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, objectMapper.writeValueAsString(orderResponse));
+        } catch (JsonProcessingException e) {
+            log.error("Error converting order response to JSON for RabbitMQ: {}", e.getMessage());
+        }
+
+        return orderResponse;
     }
 
     private Order saveOrderWithTotal(OrderRequest request, Map<String, ProductResponse> productMap) {
@@ -52,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
                 .sum();
 
         Order order = Order.builder()
+                .email(request.getEmail())
                 .userId(SecurityUtils.extractUserId())
                 .totalAmount(totalAmount)
                 .build();
@@ -64,6 +86,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(itemRequest -> {
                     OrderItem item = orderItemMapper.toOrderItem(itemRequest);
                     item.setOrder(order);
+                    item.setSubTotal(item.getUnitPrice() * item.getQuantity());
                     return item;
                 })
                 .collect(Collectors.toList());
@@ -71,10 +94,14 @@ public class OrderServiceImpl implements OrderService {
         return orderItemRepository.saveAll(items);
     }
 
-    private OrderResponse mapToOrderResponse(List<OrderItem> orderItems, Map<String, ProductResponse> productMap) {
+    // spotless:off
+    private OrderResponse mapToOrderResponse(
+            Order order, List<OrderItem> orderItems, Map<String, ProductResponse> productMap
+    ) {
         List<OrderItemResponse> responses = orderItemMapper.toOrderItemResponseList(orderItems, productMap);
-        return OrderResponse.builder().items(responses).build();
+        return orderMapper.toOrderResponse(order, responses);
     }
+    // spotless:on
 
     private Map<String, ProductResponse> fetchProductData(OrderRequest request) {
         List<String> productIds =

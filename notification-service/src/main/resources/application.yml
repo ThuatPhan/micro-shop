@@ -1,0 +1,15 @@
+server:
+  port: 8084
+
+app:
+  resend_api_key: ${RESEND_API_KEY}
+  email_domain: ${EMAIL_DOMAIN}
+
+spring:
+  application:
+    name: notification-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}

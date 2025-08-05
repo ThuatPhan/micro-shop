@@ -1,4 +1,4 @@
-package org.example.orderservice.dto.response;
+package org.example.notificationservice.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đơn hàng</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+
+<div style="background-color: #ffffff; padding: 30px; border-radius: 10px; max-width: 700px; margin: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #333333;">Xác nhận đơn hàng</h1>
+
+    <div style="margin-bottom: 20px;">
+        <p><strong>Mã đơn hàng:</strong> <span th:text="${order.id}">#ORDER_ID</span></p>
+        <p><strong>Ngày tạo:</strong> <span th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">DATE</span></p>
+        <p><strong>Email:</strong> <span th:text="${order.email}">email@example.com</span></p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+        <tr>
+            <th style="border: 1px solid #dddddd; padding: 12px; text-align: left; background-color: #eeeeee;">Sản phẩm</th>
+            <th style="border: 1px solid #dddddd; padding: 12px; text-align: left; background-color: #eeeeee;">Danh mục</th>
+            <th style="border: 1px solid #dddddd; padding: 12px; text-align: left; background-color: #eeeeee;">Giá</th>
+            <th style="border: 1px solid #dddddd; padding: 12px; text-align: left; background-color: #eeeeee;">Số lượng</th>
+            <th style="border: 1px solid #dddddd; padding: 12px; text-align: left; background-color: #eeeeee;">Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${order.items}">
+            <td style="border: 1px solid #dddddd; padding: 12px;">
+                <span style="font-weight: bold;" th:text="${item.product.name}">Tên sản phẩm</span><br/>
+            </td>
+            <td style="border: 1px solid #dddddd; padding: 12px;" th:text="${item.product.category.name}">Danh mục</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;" th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 2, 'POINT')} + ' đ'">Giá</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;" th:text="${item.quantity}">Số lượng</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;" th:text="${#numbers.formatDecimal(item.subTotal, 0, 'COMMA', 2, 'POINT')} + ' đ'">Thành tiền</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="4" style="border: 1px solid #dddddd; padding: 12px; text-align: right; font-weight: bold;">Tổng cộng:</td>
+            <td style="border: 1px solid #dddddd; padding: 12px; font-weight: bold;" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' đ'">Tổng</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div style="margin-top: 30px; font-size: 14px; color: #888888; text-align: center;">
+        Cảm ơn bạn đã mua hàng!<br/>
+        Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ hỗ trợ khách hàng.
+    </div>
+</div>
+
+</body>
+</html>
