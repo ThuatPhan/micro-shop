@@ -1,0 +1,121 @@
+package org.example.productservice.service;
+
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.example.productservice.dto.request.ProductBatchRequest;
+import org.example.productservice.dto.request.ProductCreationRequest;
+import org.example.productservice.dto.request.ProductUpdateRequest;
+import org.example.productservice.dto.response.PageResponse;
+import org.example.productservice.dto.response.ProductResponse;
+import org.example.productservice.exception.AppException;
+import org.example.productservice.exception.ErrorCode;
+import org.example.productservice.mapper.ProductMapper;
+import org.example.productservice.repository.CategoryRepository;
+import org.example.productservice.repository.ProductRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ProductServiceImpl implements ProductService {
+    ProductRepository productRepository;
+    ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
+
+    @PreAuthorize("hasAuthority('create:product')")
+    @Override
+    public ProductResponse createProduct(ProductCreationRequest request) {
+        boolean isProductExists = productRepository.existsByName(request.getName());
+        if (isProductExists) {
+            throw new AppException(ErrorCode.PRODUCT_ALREADY_EXISTS);
+        }
+
+        var product = productMapper.toProduct(request);
+
+        var category = categoryRepository
+                .findById(request.getCategory())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        product.setCategory(category);
+
+        return productMapper.toProductResponse(productRepository.save(product));
+    }
+
+    @Override
+    public ProductResponse getProduct(String productId) {
+        var product =
+                productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        return productMapper.toProductResponse(product);
+    }
+
+    @Override
+    public PageResponse<ProductResponse> getProducts(int page, int size) {
+        var productsPage = productRepository.findAll(PageRequest.of(page, size));
+        return PageResponse.of(
+                productsPage.hasNext(),
+                productsPage.map(productMapper::toProductResponse).toList());
+    }
+
+    @PreAuthorize("hasAuthority('update:product')")
+    @Override
+    public ProductResponse updateProduct(String productId, ProductUpdateRequest request) {
+        boolean isProductExists = productRepository.existsByNameAndIdNot(request.getName(), productId);
+        if (isProductExists) {
+            throw new AppException(ErrorCode.PRODUCT_ALREADY_EXISTS);
+        }
+
+        var product =
+                productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        productMapper.partialUpdate(product, request);
+
+        var category = categoryRepository
+                .findById(request.getCategory())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        product.setCategory(category);
+
+        return productMapper.toProductResponse(productRepository.save(product));
+    }
+
+    @PreAuthorize("hasAuthority('delete:product')")
+    @Override
+    public void deleteProduct(String productId) {
+        boolean isProductExists = productRepository.existsById(productId);
+        if (!isProductExists) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        productRepository.deleteById(productId);
+    }
+
+    @Override
+    public List<ProductResponse> getProducts(ProductBatchRequest request) {
+        var products = productRepository.findAllById(request.getProductIds()).stream()
+                .map(productMapper::toProductResponse)
+                .toList();
+
+        Set<String> validIds = products.stream().map(ProductResponse::getId).collect(Collectors.toSet());
+
+        Set<String> invalidIds = request.getProductIds().stream()
+                .filter(id -> !validIds.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!invalidIds.isEmpty()) {
+            StringJoiner stringJoiner = new StringJoiner(", ");
+            invalidIds.forEach(stringJoiner::add);
+
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND, "Product ids [" + stringJoiner + "] not found");
+        }
+
+        return products;
+    }
+}
